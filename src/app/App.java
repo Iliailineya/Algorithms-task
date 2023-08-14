@@ -9,20 +9,20 @@ import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class App {
-
     public static void main(String[] args) {
-        double priceSearch = getSearchValue();
-        double priceSearc1h = getSearchValue();
-        List<Product> list = DataProvider.getData();
-        getInitialData(list);
-        int index = DataService.binarySearch(list, priceSearch);
-        getOutput(list, priceSearch, index);
+        getOutput(DataProvider.getData());
     }
 
     private static double getSearchValue() {
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.print("Enter price value to search (x.xx): ");
-            return Double.parseDouble(scanner.next());
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            try {
+                System.out.print("Enter price value to search (x.xx): ");
+                return Double.parseDouble(scanner.next());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid value. Please enter a valid number.");
+            }
         }
     }
 
@@ -34,8 +34,13 @@ public class App {
                 System.out.printf("%d) %s, USD %s%n", count.getAndIncrement(), product.name(), product.price()));
     }
 
-    private static void getOutput(List<Product> list, double priceSearch, int index) {
+    private static void getOutput(List<Product> list) {
+        int index = DataService.binarySearch(list, getSearchValue());
+
+        getInitialData(list);
+
         System.out.println("------------------------");
-        System.out.printf(index == -1 ? "No data.%n" : "Product: %s, USD %s%n", index != -1 ? list.get(index).name() : "", priceSearch);
+        System.out.print(index == -1 ? "No data.\n" : "Product: %s, USD %s\n".formatted(list.get(index).name(), list.get(index).price()));
     }
+
 }
